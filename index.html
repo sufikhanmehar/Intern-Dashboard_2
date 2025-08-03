@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intern Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-areas: 
+                "header header"
+                "sidebar main";
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: 60px 1fr;
+            min-height: 100vh;
+        }
+
+        .header {
+            grid-area: header;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .sidebar {
+            grid-area: sidebar;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem 0;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            border-bottom: 1px solid #34495e;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: #34495e;
+        }
+
+        .nav-link.active {
+            background-color: #3498db;
+        }
+
+        .main-content {
+            grid-area: main;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-header h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        .metric-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-left: 4px solid #3498db;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .metric-card.total-interns {
+            border-left-color: #3498db;
+        }
+
+        .metric-card.active-applications {
+            border-left-color: #e74c3c;
+        }
+
+        .metric-card.interviews-scheduled {
+            border-left-color: #f39c12;
+        }
+
+        .metric-card.hired-this-month {
+            border-left-color: #27ae60;
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover .metric-icon {
+            transform: scale(1.1);
+        }
+
+        .total-interns .metric-icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .active-applications .metric-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .interviews-scheduled .metric-icon {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .hired-this-month .metric-icon {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .metric-title {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .metric-change.positive {
+            color: #27ae60;
+        }
+
+        .metric-change.negative {
+            color: #e74c3c;
+        }
+
+        .metric-change.neutral {
+            color: #7f8c8d;
+        }
+
+        .change-indicator {
+            font-size: 0.75rem;
+        }
+
+        .intern-table-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .intern-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .intern-table th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+            padding: 1rem 0.75rem;
+            text-align: left;
+            border-bottom: 2px solid #ecf0f1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.75rem;
+        }
+
+        .intern-table td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid #ecf0f1;
+            vertical-align: middle;
+        }
+
+        .intern-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .intern-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .intern-table tbody tr:hover {
+            background-color: #e3f2fd;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-completed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: -1.5rem;
+            padding: 1.5rem;
+        }
+
+        .search-filter-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            transition: background-color 0.2s ease;
+        }
+
+        .sortable:hover {
+            background-color: #ecf0f1;
+        }
+
+        .sortable::after {
+            content: ' ↕';
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-left: 0.5rem;
+        }
+
+        .sortable.asc::after {
+            content: ' ↑';
+            color: #3498db;
+        }
+
+        .sortable.desc::after {
+            content: ' ↓';
+            color: #3498db;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .modal-title {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .intern-detail {
+            margin-bottom: 1rem;
+        }
+
+        .intern-detail label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .intern-detail value {
+            display: block;
+            color: #7f8c8d;
+            font-size: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .application-form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .application-form-section.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .form-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .form-subtitle {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .application-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #e74c3c;
+        }
+
+        .form-input,
+        .form-select {
+            padding: 0.875rem 1rem;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-input.error,
+        .form-select.error {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .form-input.success,
+        .form-select.success {
+            border-color: #27ae60;
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+        }
+
+        .file-upload-area {
+            border: 2px dashed #bdc3c7;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background-color: #f8f9fa;
+        }
+
+        .file-upload-area:hover {
+            border-color: #3498db;
+            background-color: #ecf4fd;
+        }
+
+        .file-upload-area.dragover {
+            border-color: #3498db;
+            background-color: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        .file-upload-icon {
+            font-size: 3rem;
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-text {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload-subtext {
+            color: #95a5a6;
+            font-size: 0.875rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-selected {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            color: #155724;
+            display: none;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-submit:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-cancel {
+            background: white;
+            color: #7f8c8d;
+            padding: 0.875rem 2rem;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            border-color: #bdc3c7;
+            color: #2c3e50;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #ecf0f1;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-areas: 
+                    "header"
+                    "main";
+                grid-template-columns: 1fr;
+                grid-template-rows: 60px 1fr;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                width: 250px;
+                height: calc(100vh - 60px);
+                z-index: 1000;
+                transform: translateX(-100%);
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .metric-cards {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+            }
+
+            .metric-cards {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-value {
+                font-size: 2rem;
+            }
+
+            .metric-card {
+                padding: 1rem;
+            }
+
+            .intern-table-section {
+                margin: 0 -1rem;
+                border-radius: 8px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .intern-table {
+                font-size: 0.75rem;
+            }
+
+            .intern-table th,
+            .intern-table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .application-form {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .application-form-section {
+                margin: 0 -1rem;
+                border-radius: 8px;
+            }
+
+            .file-upload-area {
+                padding: 1.5rem 1rem;
+            }
+
+            .file-upload-icon {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+        }
+        /* Loading and Error States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ecf0f1;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #e74c3c;
+            background-color: #fdf2f2;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .error-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .retry-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .metric-card.loading {
+            opacity: 0.6;
+        }
+
+        .table-loading {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        /* Notification System */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            max-width: 400px;
+            min-width: 300px;
+        }
+
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 4px solid #3498db;
+            animation: slideInRight 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification.success {
+            border-left-color: #27ae60;
+        }
+
+        .notification.error {
+            border-left-color: #e74c3c;
+        }
+
+        .notification.warning {
+            border-left-color: #f39c12;
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-close:hover {
+            color: #2c3e50;
+        }
+
+        .notification-message {
+            color: #7f8c8d;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .notification-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background-color: rgba(52, 152, 219, 0.3);
+            width: 100%;
+            animation: progressBar 3s linear;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes progressBar {
+            from {
+                width: 100%;
+            }
+            to {
+                width: 0%;
+            }
+        }
+
+        /* Enhanced Loading States */
+        .btn.loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }\n    </style>
+</head>
+<body>
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+    
+    <div class="dashboard-container">
+        <header class="header">
+            <h1>Intern Dashboard</h1>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                ☰
+            </button>
+        </header>
+
+        <nav class="sidebar" id="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Interns</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showApplicationForm()">Applications</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Reports</a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-header">
+                <h2>Welcome to Your Dashboard</h2>
+                <p>Track your internship program performance and key metrics.</p>
+            </div>
+
+            <div class="metric-cards" id="metricCards">
+                <!-- Metrics will be loaded dynamically -->
+            </div>
+
+            <div class="intern-table-section">
+                <div class="section-header">
+                    <h3 class="section-title">Current Interns</h3>
+                </div>
+                <div class="search-filter-container">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search interns by name, email, or department...">
+                    <select class="filter-select" id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="Active">Active</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                    <select class="filter-select" id="departmentFilter">
+                        <option value="">All Departments</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Design">Design</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="HR">HR</option>
+                        <option value="Finance">Finance</option>
+                    </select>
+                </div>
+                <div class="table-responsive">
+                    <table class="intern-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-column="name">Name</th>
+                                <th class="sortable" data-column="email">Email</th>
+                                <th class="sortable" data-column="status">Status</th>
+                                <th class="sortable" data-column="department">Department</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="internTableBody">
+                            <!-- Table data will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h3>Active Interns</h3>
+                    <p>Overview of current interns, their assignments, and progress tracking across all departments.</p>
+                </div>
+
+                <div class="card">
+                    <h3>New Applications</h3>
+                    <p>Review and process recent intern applications. Track application status and schedule interviews.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Performance Reports</h3>
+                    <p>Generate comprehensive reports on intern performance, feedback, and program effectiveness.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Program Analytics</h3>
+                    <p>View detailed analytics on internship programs, completion rates, and success metrics.</p>
+                </div>
+            </div>
+
+            <!-- Application Form Section -->
+            <div class="application-form-section show" id="applicationFormSection">
+                <div class="form-header">
+                    <div>
+                        <h3 class="form-title">New Intern Application</h3>
+                        <p class="form-subtitle">Submit your application to join our internship program</p>
+                    </div>
+                    <button class="close-btn" onclick="hideApplicationForm()">&times;</button>
+                </div>
+
+                <form class="application-form" id="applicationForm" novalidate>
+                    <div class="form-group">
+                        <label class="form-label required" for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" class="form-input" placeholder="Enter your first name">
+                        <div class="error-message" id="firstNameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required" for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Enter your last name">
+                        <div class="error-message" id="lastNameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required" for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email address">
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required" for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="(555) 123-4567">
+                        <div class="error-message" id="phoneError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required" for="department">Department Preference</label>
+                        <select id="department" name="department" class="form-select">
+                            <option value="">Select a department</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Design">Design</option>
+                            <option value="Data Science">Data Science</option>
+                            <option value="HR">Human Resources</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Operations">Operations</option>
+                        </select>
+                        <div class="error-message" id="departmentError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="university">University/School</label>
+                        <input type="text" id="university" name="university" class="form-input" placeholder="Enter your university or school">
+                        <div class="error-message" id="universityError"></div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label required" for="resume">Resume Upload</label>
+                        <div class="file-upload-area" onclick="document.getElementById('resume').click()" 
+                             ondrop="handleFileDrop(event)" 
+                             ondragover="handleDragOver(event)" 
+                             ondragleave="handleDragLeave(event)">
+                            <div class="file-upload-icon">📄</div>
+                            <div class="file-upload-text">Click to upload or drag and drop your resume</div>
+                            <div class="file-upload-subtext">PDF, DOC, or DOCX files up to 5MB</div>
+                            <input type="file" id="resume" name="resume" class="file-input" accept=".pdf,.doc,.docx" onchange="handleFileSelect(event)">
+                            <div class="file-selected" id="fileSelected"></div>
+                        </div>
+                        <div class="error-message" id="resumeError"></div>
+                        <div class="progress-bar" id="uploadProgress">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="hideApplicationForm()">Cancel</button>
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <span>📤</span> Submit Application
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Intern Details -->
+    <div id="internModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Intern Details</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <!-- Intern details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                sidebar.classList.contains('open') && 
+                !sidebar.contains(event.target) && 
+                !menuToggle.contains(event.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Table functionality
+        let currentSort = { column: null, direction: 'asc' };
+        let originalRows = [];
+
+        // Initialize table functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.getElementById('internTableBody');
+            originalRows = Array.from(tableBody.querySelectorAll('tr'));
+            
+            // Add search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', filterTable);
+            
+            // Add filter functionality
+            const statusFilter = document.getElementById('statusFilter');
+            const departmentFilter = document.getElementById('departmentFilter');
+            statusFilter.addEventListener('change', filterTable);
+            departmentFilter.addEventListener('change', filterTable);
+            
+            // Add sorting functionality
+            const sortableHeaders = document.querySelectorAll('.sortable');
+            sortableHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    sortTable(this.dataset.column);
+                });
+            });
+        });
+
+        function filterTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const departmentFilter = document.getElementById('departmentFilter').value;
+            const tableBody = document.getElementById('internTableBody');
+            
+            let filteredRows = originalRows.filter(row => {
+                const name = row.dataset.name.toLowerCase();
+                const email = row.dataset.email.toLowerCase();
+                const department = row.dataset.department.toLowerCase();
+                const status = row.dataset.status;
+                
+                const matchesSearch = name.includes(searchTerm) || 
+                                    email.includes(searchTerm) || 
+                                    department.includes(searchTerm);
+                
+                const matchesStatus = !statusFilter || status === statusFilter;
+                const matchesDepartment = !departmentFilter || row.dataset.department === departmentFilter;
+                
+                return matchesSearch && matchesStatus && matchesDepartment;
+            });
+            
+            // Clear current rows
+            tableBody.innerHTML = '';
+            
+            if (filteredRows.length === 0) {
+                const noResults = document.createElement('tr');
+                noResults.innerHTML = '<td colspan="5" class="no-results">No interns found matching your criteria</td>';
+                tableBody.appendChild(noResults);
+            } else {
+                filteredRows.forEach(row => {
+                    tableBody.appendChild(row.cloneNode(true));
+                });
+                
+                // Reattach event listeners to cloned elements
+                const viewButtons = tableBody.querySelectorAll('.view-btn');
+                viewButtons.forEach(btn => {
+                    btn.onclick = function() { showInternDetails(this); };
+                });
+            }
+        }
+
+        function sortTable(column) {
+            const tableBody = document.getElementById('internTableBody');
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            
+            // Update sort direction
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+            
+            // Update header classes
+            document.querySelectorAll('.sortable').forEach(header => {
+                header.classList.remove('asc', 'desc');
+                if (header.dataset.column === column) {
+                    header.classList.add(currentSort.direction);
+                }
+            });
+            
+            // Sort rows
+            rows.sort((a, b) => {
+                let aValue = a.dataset[column] || '';
+                let bValue = b.dataset[column] || '';
+                
+                // Handle status sorting
+                if (column === 'status') {
+                    const statusOrder = { 'Active': 1, 'Pending': 2, 'Completed': 3 };
+                    aValue = statusOrder[aValue] || 999;
+                    bValue = statusOrder[bValue] || 999;
+                }
+                
+                if (currentSort.direction === 'asc') {
+                    return aValue.toString().localeCompare(bValue.toString());
+                } else {
+                    return bValue.toString().localeCompare(aValue.toString());
+                }
+            });
+            
+            // Clear and repopulate table
+            tableBody.innerHTML = '';
+            rows.forEach(row => {
+                tableBody.appendChild(row);
+            });
+        }
+
+        function showInternDetails(button) {
+            const row = button.closest('tr');
+            const name = row.dataset.name;
+            const email = row.dataset.email;
+            const status = row.dataset.status;
+            const department = row.dataset.department;
+            const startDate = row.dataset.startDate;
+            const phone = row.dataset.phone;
+            
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="intern-detail">
+                    <label>Full Name</label>
+                    <value>${name}</value>
+                </div>
+                <div class="intern-detail">
+                    <label>Email Address</label>
+                    <value>${email}</value>
+                </div>
+                <div class="intern-detail">
+                    <label>Phone Number</label>
+                    <value>${phone}</value>
+                </div>
+                <div class="intern-detail">
+                    <label>Department</label>
+                    <value>${department}</value>
+                </div>
+                <div class="intern-detail">
+                    <label>Status</label>
+                    <value><span class="status-badge status-${status.toLowerCase()}">${status}</span></value>
+                </div>
+                <div class="intern-detail">
+                    <label>Start Date</label>
+                    <value>${new Date(startDate).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    })}</value>
+                </div>
+            `;
+            
+            const modal = document.getElementById('internModal');
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('internModal');
+            modal.classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('internModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Application Form Functions
+        function showApplicationForm() {
+            document.getElementById('applicationFormSection').classList.add('show');
+            document.getElementById('applicationFormSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideApplicationForm() {
+            document.getElementById('applicationFormSection').classList.remove('show');
+            document.getElementById('applicationForm').reset();
+            clearValidation();
+        }
+
+        // File Upload Functions
+        function handleFileDrop(e) {
+            e.preventDefault();
+            const uploadArea = e.currentTarget;
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                validateAndSetFile(file);
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                validateAndSetFile(file);
+            }
+        }
+
+        function validateAndSetFile(file) {
+            const fileSelected = document.getElementById('fileSelected');
+            const resumeError = document.getElementById('resumeError');
+            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            
+            // Reset previous state
+            resumeError.style.display = 'none';
+            fileSelected.style.display = 'none';
+            
+            // Validate file type
+            if (!allowedTypes.includes(file.type)) {
+                showFieldError('resume', 'Please upload a PDF, DOC, or DOCX file.');
+                return;
+            }
+            
+            // Validate file size
+            if (file.size > maxSize) {
+                showFieldError('resume', 'File size must be less than 5MB.');
+                return;
+            }
+            
+            // Show selected file
+            fileSelected.innerHTML = `
+                <strong>Selected:</strong> ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)
+                <button type="button" style="float: right; background: none; border: none; color: #e74c3c; cursor: pointer;" onclick="clearFileSelection()">&times;</button>
+            `;
+            fileSelected.style.display = 'block';
+            
+            // Simulate upload progress
+            simulateUpload();
+        }
+
+        function clearFileSelection() {
+            document.getElementById('resume').value = '';
+            document.getElementById('fileSelected').style.display = 'none';
+            document.getElementById('uploadProgress').style.display = 'none';
+        }
+
+        function simulateUpload() {
+            const progressBar = document.getElementById('uploadProgress');
+            const progressFill = document.getElementById('progressFill');
+            
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 30;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                    }, 1000);
+                }
+                progressFill.style.width = progress + '%';
+            }, 200);
+        }
+
+        // Form Validation Functions
+        function validateField(fieldId, validationFn, errorMessage) {
+            const field = document.getElementById(fieldId);
+            const value = field.value.trim();
+            
+            if (!validationFn(value)) {
+                showFieldError(fieldId, errorMessage);
+                return false;
+            } else {
+                showFieldSuccess(fieldId);
+                return true;
+            }
+        }
+
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+            
+            field.classList.remove('success');
+            field.classList.add('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function showFieldSuccess(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+            
+            field.classList.remove('error');
+            field.classList.add('success');
+            errorElement.style.display = 'none';
+        }
+
+        function clearValidation() {
+            const fields = ['firstName', 'lastName', 'email', 'phone', 'department', 'university', 'resume'];
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const errorElement = document.getElementById(fieldId + 'Error');
+                
+                if (field) {
+                    field.classList.remove('error', 'success');
+                }
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                }
+            });
+            
+            clearFileSelection();
+        }
+
+        // Validation Rules
+        const validationRules = {
+            firstName: (value) => value.length >= 2 && /^[a-zA-Z\s]+$/.test(value),
+            lastName: (value) => value.length >= 2 && /^[a-zA-Z\s]+$/.test(value),
+            email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+            phone: (value) => /^[\+]?[1-9][\d]{0,2}[\s]?[\(]?[\d]{3}[\)]?[\s\-]?[\d]{3}[\s\-]?[\d]{4}$/.test(value.replace(/\s/g, '')),
+            department: (value) => value.length > 0,
+            university: (value) => true, // Optional field
+        };
+
+        const errorMessages = {
+            firstName: 'First name must be at least 2 characters and contain only letters.',
+            lastName: 'Last name must be at least 2 characters and contain only letters.',
+            email: 'Please enter a valid email address.',
+            phone: 'Please enter a valid phone number.',
+            department: 'Please select a department preference.',
+            university: 'Please enter your university or school name.',
+        };
+
+        // Real-time Validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('applicationForm');
+            const fields = ['firstName', 'lastName', 'email', 'phone', 'department', 'university'];
+            
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('blur', function() {
+                        if (this.value.trim() !== '' || fieldId === 'department') {
+                            validateField(fieldId, validationRules[fieldId], errorMessages[fieldId]);
+                        }
+                    });
+                    
+                    field.addEventListener('input', function() {
+                        if (this.classList.contains('error')) {
+                            validateField(fieldId, validationRules[fieldId], errorMessages[fieldId]);
+                        }
+                    });
+                }
+            });
+            
+            // Form Submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitApplication();
+            });
+        });
+
+        function submitApplication() {
+            const submitBtn = document.getElementById('submitBtn');
+            let isValid = true;
+            
+            // Validate all required fields
+            const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'department'];
+            requiredFields.forEach(fieldId => {
+                if (!validateField(fieldId, validationRules[fieldId], errorMessages[fieldId])) {
+                    isValid = false;
+                }
+            });
+            
+            // Validate resume upload
+            const resumeInput = document.getElementById('resume');
+            if (!resumeInput.files.length) {
+                showFieldError('resume', 'Please upload your resume.');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                // Scroll to first error
+                const firstError = document.querySelector('.form-input.error, .form-select.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳</span> Submitting...';
+            
+            // Simulate form submission
+            setTimeout(() => {
+                alert('Application submitted successfully! We will review your application and get back to you soon.');
+                hideApplicationForm();
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>📤</span> Submit Application';
+            }, 2000);
+        }
+    </script>
+    
+    <!-- API Integration Script -->
+    <script src="api-integration.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+
+> intern-dashboard-server@1.0.0 start
+> node server.js
+
+🚀 Intern Dashboard Server is running on port 3000
+📊 Dashboard: http://localhost:3000
+🔍 Health Check: http://localhost:3000/api/health
+📈 API Status: http://localhost:3000/api/status
+::1 - - [03/Aug/2025:06:27:39 +0000] "GET /api/health HTTP/1.1" 200 150 "-" "-"
+::1 - - [03/Aug/2025:06:27:39 +0000] "GET /api/health HTTP/1.1" 200 150 "-" "-"
+::1 - - [03/Aug/2025:06:27:39 +0000] "GET /api/interns HTTP/1.1" 200 4633 "-" "-"
+::1 - - [03/Aug/2025:06:27:39 +0000] "GET /api/interns/INT-001 HTTP/1.1" 200 785 "-" "-"
+::1 - - [03/Aug/2025:06:27:39 +0000] "GET /api/dashboard/stats HTTP/1.1" 200 777 "-" "-"
+::1 - - [03/Aug/2025:06:27:39 +0000] "GET /api/interns?status=Active&department=Engineering&sortBy=firstName HTTP/1.1" 200 883 "-" "-"
+::1 - - [03/Aug/2025:06:27:39 +0000] "GET /api/interns/INVALID-ID HTTP/1.1" 400 78 "-" "-"
+✅ Created new intern: Test User (INT-009)
+::1 - - [03/Aug/2025:06:27:39 +0000] "POST /api/interns HTTP/1.1" 201 453 "-" "-"
+✅ Updated intern: Test User (INT-009)
+::1 - - [03/Aug/2025:06:27:39 +0000] "PUT /api/interns/INT-009 HTTP/1.1" 200 486 "-" "-"
+::1 - - [03/Aug/2025:06:27:39 +0000] "POST /api/interns HTTP/1.1" 400 294 "-" "-"
+::1 - - [03/Aug/2025:06:27:39 +0000] "POST /api/interns HTTP/1.1" 409 121 "-" "-"
+::1 - - [03/Aug/2025:06:27:39 +0000] "DELETE /api/interns/INT-009 HTTP/1.1" 400 257 "-" "-"
+🗑️ Deleted intern: Test User (INT-009)
+::1 - - [03/Aug/2025:06:27:39 +0000] "DELETE /api/interns/INT-009?confirm=true HTTP/1.1" 200 485 "-" "-"
+::1 - - [03/Aug/2025:06:27:48 +0000] "GET / HTTP/1.1" 200 56085 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+::1 - - [03/Aug/2025:06:27:48 +0000] "GET /api-integration.js HTTP/1.1" 200 26532 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+::1 - - [03/Aug/2025:06:27:48 +0000] "GET /api/dashboard/stats HTTP/1.1" 200 777 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+::1 - - [03/Aug/2025:06:27:48 +0000] "GET /api/interns HTTP/1.1" 200 4633 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+✅ Created new intern: Frontend Test (INT-009)
+::1 - - [03/Aug/2025:06:28:35 +0000] "POST /api/interns HTTP/1.1" 201 471 "-" "undici"
+::1 - - [03/Aug/2025:06:28:35 +0000] "GET /api/interns/INT-009 HTTP/1.1" 200 676 "-" "undici"
+✅ Updated intern: Frontend Test (INT-009)
+::1 - - [03/Aug/2025:06:28:35 +0000] "PUT /api/interns/INT-009 HTTP/1.1" 200 535 "-" "undici"
+::1 - - [03/Aug/2025:06:28:35 +0000] "GET /api/interns?search=Frontend&department=Engineering HTTP/1.1" 200 796 "-" "undici"
+🗑️ Deleted intern: Frontend Test (INT-009)
+::1 - - [03/Aug/2025:06:28:35 +0000] "DELETE /api/interns/INT-009?confirm=true HTTP/1.1" 200 534 "-" "undici"
+::1 - - [03/Aug/2025:06:28:35 +0000] "GET /api/dashboard/stats HTTP/1.1" 200 777 "-" "undici"
+::1 - - [03/Aug/2025:06:28:35 +0000] "POST /api/interns HTTP/1.1" 400 294 "-" "undici"
+✅ Created new intern: Frontend Test (INT-009)
+::1 - - [03/Aug/2025:06:28:59 +0000] "POST /api/interns HTTP/1.1" 201 471 "-" "undici"
+::1 - - [03/Aug/2025:06:28:59 +0000] "GET /api/interns/INT-009 HTTP/1.1" 200 676 "-" "undici"
+✅ Updated intern: Frontend Test (INT-009)
+::1 - - [03/Aug/2025:06:28:59 +0000] "PUT /api/interns/INT-009 HTTP/1.1" 200 535 "-" "undici"
+::1 - - [03/Aug/2025:06:28:59 +0000] "GET /api/interns?search=Frontend&department=Engineering HTTP/1.1" 200 796 "-" "undici"
+🗑️ Deleted intern: Frontend Test (INT-009)
+::1 - - [03/Aug/2025:06:28:59 +0000] "DELETE /api/interns/INT-009?confirm=true HTTP/1.1" 200 534 "-" "undici"
+::1 - - [03/Aug/2025:06:28:59 +0000] "GET /api/dashboard/stats HTTP/1.1" 200 777 "-" "undici"
+::1 - - [03/Aug/2025:06:28:59 +0000] "POST /api/interns HTTP/1.1" 400 294 "-" "undici"
+::1 - - [03/Aug/2025:06:29:53 +0000] "GET / HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+::1 - - [03/Aug/2025:06:29:53 +0000] "GET /api-integration.js HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+::1 - - [03/Aug/2025:06:29:53 +0000] "GET /api/dashboard/stats HTTP/1.1" 200 777 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+::1 - - [03/Aug/2025:06:29:53 +0000] "GET /api/interns HTTP/1.1" 200 4633 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+::1 - - [03/Aug/2025:08:50:18 +0000] "GET / HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+::1 - - [03/Aug/2025:08:50:18 +0000] "GET /api-integration.js HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+::1 - - [03/Aug/2025:08:50:18 +0000] "GET /api/dashboard/stats HTTP/1.1" 200 777 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+::1 - - [03/Aug/2025:08:50:18 +0000] "GET /api/interns HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
