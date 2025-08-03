@@ -104,6 +104,37 @@ PORT=3000
 NODE_ENV=development
 ```
 
+## Deployment
+
+### Railway.app Deployment
+
+This application is configured for Railway deployment with:
+
+- `railway.toml` configuration file
+- Production-ready middleware
+- Automatic data directory creation
+- Graceful shutdown handling
+- Health check endpoint
+
+To deploy to Railway:
+
+1. Push code to your Git repository
+2. Connect repository to Railway
+3. Set environment variables:
+   - `NODE_ENV=production`
+4. Deploy using Railway's automatic deployment
+
+### Production Features
+
+- ✅ Proper port binding (`0.0.0.0:PORT`)
+- ✅ Environment-based configuration
+- ✅ CORS setup for production domains
+- ✅ Security headers with Helmet
+- ✅ Graceful shutdown handling
+- ✅ Error logging and monitoring
+- ✅ Health check endpoints
+- ✅ Automatic data directory creation
+
 ## Contributing
 
 1. Fork the repository

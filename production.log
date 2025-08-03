@@ -1,0 +1,14 @@
+
+> intern-dashboard-server@1.0.0 start
+> node server.js
+
+🚀 Intern Dashboard Server is running on port 3000
+🌐 Environment: production
+📊 Dashboard: https://your-app.railway.app
+🔍 Health Check: https://your-app.railway.app/api/health
+📈 API Status: https://your-app.railway.app/api/status
+📁 Data directory: /Users/nayabmehar/dashboard/data
+📄 Interns file: /Users/nayabmehar/dashboard/data/interns.json
+127.0.0.1 - - [03/Aug/2025:12:03:56 +0000] "GET /api/health HTTP/1.1" 200 148 "-" "curl/8.7.1"
+127.0.0.1 - - [03/Aug/2025:12:04:50 +0000] "GET /api/interns HTTP/1.1" 200 4633 "-" "curl/8.7.1"
+🛑 SIGTERM received, shutting down gracefully
