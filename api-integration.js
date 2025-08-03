@@ -1,12 +1,24 @@
-// API Configuration
-const API_BASE_URL = 'http://localhost:3000/api';
+// API Configuration - Auto-detect environment
+const API_BASE_URL = (() => {
+    // Check if we're in development (localhost)
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:3000/api';
+    }
+    // In production, use relative URLs (same domain)
+    return '/api';
+})();
+
+console.log('🔗 API Base URL:', API_BASE_URL);
 let internData = [];
 let dashboardStats = null;
 
 // API Helper Functions
 async function apiRequest(endpoint, options = {}) {
+    const url = `${API_BASE_URL}${endpoint}`;
+    console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
+    
     try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetch(url, {
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers
@@ -14,15 +26,39 @@ async function apiRequest(endpoint, options = {}) {
             ...options
         });
         
-        const data = await response.json();
+        console.log(`📡 Response status: ${response.status} ${response.statusText}`);
         
-        if (!response.ok) {
-            throw new Error(data.error || `HTTP error! status: ${response.status}`);
+        // Handle non-JSON responses
+        let data;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            console.error('❌ Non-JSON response:', text);
+            throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}...`);
         }
         
+        if (!response.ok) {
+            console.error('❌ API Error Response:', data);
+            throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
+        }
+        
+        console.log(`✅ API Request successful:`, data);
         return data;
+        
     } catch (error) {
-        console.error('API request failed:', error);
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            console.error('❌ Network error - server may be unreachable:', error);
+            throw new Error('Network error: Unable to connect to server. Please check your internet connection.');
+        }
+        
+        console.error('❌ API request failed:', {
+            endpoint,
+            url,
+            error: error.message,
+            stack: error.stack
+        });
         throw error;
     }
 }
@@ -31,19 +67,37 @@ async function apiRequest(endpoint, options = {}) {
 async function loadDashboardMetrics() {
     const metricCards = document.getElementById('metricCards');
     
+    console.log('📊 Loading dashboard metrics...');
+    
     // Show loading state
     metricCards.innerHTML = createLoadingCards();
     
     try {
+        console.log('🔗 Making request to:', `${API_BASE_URL}/dashboard/stats`);
         const response = await apiRequest('/dashboard/stats');
+        console.log('✅ Dashboard metrics response:', response);
+        
         dashboardStats = response.data;
         
         // Update metrics with real data
         metricCards.innerHTML = createMetricCards(dashboardStats.metrics, dashboardStats.trends);
+        console.log('✅ Dashboard metrics loaded successfully');
+        
+        // Show success notification
+        showNotification('Dashboard metrics loaded successfully', 'success', 3000);
         
     } catch (error) {
-        console.error('Failed to load dashboard metrics:', error);
-        metricCards.innerHTML = createErrorState('Failed to load dashboard metrics', 'loadDashboardMetrics');
+        console.error('❌ Failed to load dashboard metrics:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            apiUrl: `${API_BASE_URL}/dashboard/stats`
+        });
+        
+        metricCards.innerHTML = createErrorState('Failed to load dashboard metrics. Please check your connection.', 'loadDashboardMetrics');
+        
+        // Show error notification
+        showNotification('Failed to load dashboard metrics. Please check your connection and try again.', 'error', 5000);
     }
 }
 
@@ -140,19 +194,37 @@ function createMetricCards(metrics, trends) {
 async function loadInternData() {
     const tableBody = document.getElementById('internTableBody');
     
+    console.log('👥 Loading intern data...');
+    
     // Show loading state
     showTableLoading();
     
     try {
+        console.log('🔗 Making request to:', `${API_BASE_URL}/interns`);
         const response = await apiRequest('/interns');
+        console.log('✅ Intern data response:', response);
+        
         internData = response.data;
         originalRows = internData; // Update for filtering
         
         displayInternData(internData);
+        console.log(`✅ Loaded ${internData.length} interns successfully`);
+        
+        // Show success notification
+        showNotification(`Loaded ${internData.length} interns successfully`, 'success', 3000);
         
     } catch (error) {
-        console.error('Failed to load intern data:', error);
-        showTableError('Failed to load intern data', 'loadInternData');
+        console.error('❌ Failed to load intern data:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            apiUrl: `${API_BASE_URL}/interns`
+        });
+        
+        showTableError('Failed to load intern data. Please check your connection.', 'loadInternData');
+        
+        // Show error notification
+        showNotification('Failed to load intern data. Please check your connection and try again.', 'error', 5000);
     }
 }
 
@@ -666,9 +738,36 @@ async function deleteIntern(internId) {
     }
 }
 
+// Connection test function
+async function testConnection() {
+    console.log('🧪 Testing server connection...');
+    try {
+        const response = await fetch(`${API_BASE_URL.replace('/api', '')}/api/health`);
+        const data = await response.json();
+        console.log('✅ Server connection test successful:', data);
+        return true;
+    } catch (error) {
+        console.error('❌ Server connection test failed:', error);
+        showNotification('Unable to connect to server. Please check your internet connection.', 'error', 10000);
+        return false;
+    }
+}
+
 // Initialize data loading when page loads
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 Initializing dashboard...');
+    console.log('🌍 Current hostname:', window.location.hostname);
+    console.log('🔗 API Base URL:', API_BASE_URL);
+    
+    // Test connection first
+    const connected = await testConnection();
+    if (!connected) {
+        console.log('❌ Connection test failed - showing offline state');
+        return;
+    }
+    
     // Load initial data
+    console.log('📊 Loading dashboard data...');
     loadDashboardMetrics();
     loadInternData();
     
